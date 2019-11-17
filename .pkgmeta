@@ -1,0 +1,4 @@
+package-as: AdiBags-BOEOverlay
+
+required-dependencies:
+  - adibags
