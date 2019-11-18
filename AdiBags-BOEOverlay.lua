@@ -26,21 +26,16 @@ end
 function mod:GetOptions()
 end
 
-local function test()
-	local text = button:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-	text:SetPoint("TOPLEFT", button, 3, -1)
-	text:Hide()
-	texts[button] = text
-    return GetItemQualityColor(0)
-end
-
 local function isBound(button)
     local link = button:GetItemLink()
     if link then
-        local _, _, _, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(link)
-        if bindType == 2 then
-            if not C_Item.IsBound(ItemLocation:CreateFromBagAndSlot(button.bag, button.slot)) then
-                return true
+        local _, _, _, _, _, _, _, _, equipLocation, _, _, _, _, bindType = GetItemInfo(link)
+        if equipLocation ~= "" and bindType == 2 then
+            local location = ItemLocation:CreateFromBagAndSlot(button.bag, button.slot)
+            if location then
+                if not C_Item.IsBound(location) then
+                    return true
+                end
             end
         end
     end
@@ -49,29 +44,31 @@ local function isBound(button)
 end
 
 function mod:UpdateButton(event, button)
-    local text = button.BOEOverlayText
+    local texture = button.BOEOverlayTexture
     
     if enabled then
         local bound, rarity = isBound(button)
 
         if bound then
-            if not text then
-                text = button:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-                text:SetPoint("BOTTOMLEFT", button, 3, 1)
-                text:SetText("BOE")
-                text:SetTextColor(1, 1, 0)
-                text:SetAlpha(1)
-                text:Show()
-                button.BOEOverlayText = text
+            if not texture then
+                texture = button:CreateTexture(nil, "OVERLAY")
+                texture:SetPoint("BOTTOMLEFT", button, 1, 1)
+                texture:SetTexture("Interface\\AddOns\\AdiBags-BOEOverlay\\Textures\\Coin")
+                texture:SetVertexColor(1, 1, 0)
+                texture:SetWidth(18)
+                texture:SetHeight(18)
+                texture:Show()
+                texture:SetAlpha(1)
+                button.BOEOverlayTexture = texture
             end
 
-            text:SetAlpha(1)
+            texture:SetAlpha(1)
             return
         end
     end
 
-    if text then
-        text:SetAlpha(0)
+    if texture then
+        texture:SetAlpha(0)
     end
 end
 
